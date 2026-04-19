@@ -1,0 +1,39 @@
+name: Test library-backend
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+# Change WORK_DIR if your library-backend/ and tests/ folders
+# are not in the repository root.
+# For example, set to "part8" if the structure is:
+#   part8/library-backend/
+#   part8/tests/
+env:
+  WORK_DIR: .
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install library-backend dependencies
+        working-directory: ${{ env.WORK_DIR }}/library-backend
+        run: npm install
+
+      - name: Install test dependencies
+        working-directory: ${{ env.WORK_DIR }}/tests
+        run: npm install
+
+      - name: Run tests
+        working-directory: ${{ env.WORK_DIR }}/tests
+        run: npm test
