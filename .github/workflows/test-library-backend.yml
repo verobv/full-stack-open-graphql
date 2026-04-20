@@ -1,16 +1,10 @@
 name: Test library-backend
 
 on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+  # push:
+  #   branches: [ main, master ]
+  workflow_dispatch:
 
-# Change WORK_DIR if your library-backend/ and tests/ folders
-# are not in the repository root.
-# For example, set to "part8" if the structure is:
-#   part8/library-backend/
-#   part8/tests/
 env:
   WORK_DIR: "part8"
 
