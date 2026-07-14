@@ -127,6 +127,9 @@ const resolvers = {
     },
     allAuthors: async () => await Author.find({}),
     me: (root, args, context) => {
+      console.log("ME RESOLVER CALLED")
+      console.log(context)
+      console.log("CURRENT USER:", context.currentUser)
       return context.currentUser
     }
   },

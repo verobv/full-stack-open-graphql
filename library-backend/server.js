@@ -17,7 +17,11 @@ const getUserFromAuthHeader = async (auth) => {
       process.env.JWT_SECRET
     )
 
+    console.log('Decoded token:', decodedToken)
+
     const user = await User.findById(decodedToken.id)
+
+    console.log('User from DB:', user)
 
     return user
   } catch (error) {
@@ -39,6 +43,7 @@ const startServer = (port) => {
           const auth = req.headers.authorization
           const currentUser = await getUserFromAuthHeader(auth)
           //console.log(currentUser)
+          console.log("Context returning:", currentUser)
           return { currentUser }
       },
     }).then(({ url }) => {

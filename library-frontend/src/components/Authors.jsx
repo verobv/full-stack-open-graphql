@@ -17,7 +17,7 @@ const SET_DATE = gql`
 `
 
 const Authors = (props) => {
-  const authors = props.authors
+  const authors = props.authors ?? []
   const [name, setName] = useState(authors.length > 0 ? authors[0].name : "")
   const [born, setBorn] = useState('')
 
@@ -56,31 +56,37 @@ const Authors = (props) => {
           ))}
         </tbody>
       </table>
-
-      <h3>Set birthyear</h3>
-      <form onSubmit={submit}>
-        <div>
-          name
-          <select value={name} onChange={({ target }) => setName(target.value)}>
-            {authors.map(author => (
-              <option
-                key={author.name}
-                value={author.name}
-              >
-                {author.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          born
-          <input
-            value={born}
-            onChange={({ target }) => setBorn(target.value)}
-          />
-        </div>
-        <button type="submit">update author</button>
-      </form>
+      
+      {props.token && (
+        <>
+          <h3>Set birthyear</h3>
+            <form onSubmit={submit}>
+              <div>
+                name
+                <select name="name" value={name} onChange={({ target }) => setName(target.value)}>
+                  {authors.map(author => (
+                    <option
+                      key={author.name}
+                      value={author.name}
+                    >
+                      {author.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label htmlFor="born">born</label>
+                <input
+                  id="born"
+                  value={born}
+                  onChange={({ target }) => setBorn(target.value)}
+                />
+              </div>
+              <button type="submit">update author</button>
+            </form>
+        </>
+      )}
+      
     </div>
   )
 }

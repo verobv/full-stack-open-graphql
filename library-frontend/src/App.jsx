@@ -2,54 +2,78 @@ import { useState } from 'react'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
-import { gql } from '@apollo/client'
-import { useQuery } from '@apollo/client/react'
-
-const ALL_AUTHORS = gql`
-  query {
-    allAuthors {
-      id
-      name
-      born
-      bookCount
-    }
-  }
-`
-
-const ALL_BOOKS = gql`
-  query {
-    allBooks {
-      id
-      title
-      author
-      published
-    }
-  }
-`
+import Recommended from './components/Recommended'
+import { useQuery, useApolloClient } from '@apollo/client/react'
+import LoginForm from './components/LoginForm'
+import { ALL_AUTHORS, ALL_BOOKS } from './queries'
 
 const App = () => {
+  const [token, setToken] = useState(localStorage.getItem('library-user-token'))
+  const [errorMessage, setErrorMessage] = useState(null)
   const [page, setPage] = useState('authors')
   const aResult = useQuery(ALL_AUTHORS)
-  const bResult = useQuery(ALL_BOOKS)
+  // const bResult = useQuery(ALL_BOOKS)
+  const client = useApolloClient()
   
-  if (aResult.loading || bResult.loading) {
+  if (aResult.loading) {
     return <div>loading...</div>
   }
 
+  const notify = (message) => {
+    setErrorMessage(message)
+    setTimeout(() => {
+      setErrorMessage(null)
+    }, 10000)
+  }
 
+  const onLogout = () => {
+    setToken(null)
+    localStorage.clear()
+    client.resetStore()
+  }
+  console.log("Current page:", page)
   return (
     <div>
       <div>
         <button onClick={() => setPage('authors')}>authors</button>
         <button onClick={() => setPage('books')}>books</button>
-        <button onClick={() => setPage('add')}>add book</button>
+        {token && (
+          <button onClick={() => setPage('add')}>
+            add book
+          </button>
+        )}
+        {!token && (
+          <button onClick={() => setPage('login')}>
+            login
+          </button>
+        )}
+        {token && (
+          <button onClick={() => setPage('recommended')}>
+            recommend
+          </button>
+        )}
+        {token && (
+          <button onClick={onLogout}>
+            logout
+          </button>
+        )}
       </div>
 
-      <Authors show={page === 'authors'} authors={aResult.data?.allAuthors} />
+      {errorMessage && (
+        <div style={{ color: 'red' }}>
+          {errorMessage}
+        </div>
+      )}
 
-      <Books show={page === 'books'} books={bResult.data?.allBooks} />
+      <Authors show={page === 'authors'} authors={aResult.data?.allAuthors} token={token} />
 
-      <NewBook show={page === 'add'} allAuthors={ALL_AUTHORS} allBooks={ALL_BOOKS} />
+      <Books show={page === 'books'} />
+
+      <NewBook show={page === 'add'} allAuthors={ALL_AUTHORS} allBooks={ALL_BOOKS} token={token} />
+
+      <Recommended show={page === 'recommended'} />
+
+      <LoginForm show={page === 'login'} setToken={setToken} setError={notify} setPage={setPage} />
     </div>
   )
 }
